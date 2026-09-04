@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Strip Invisible Characters
  * description: Strip invisible Unicode from $[rawText] and store cleaned value in $[cleanText]
  * actionType: custom_strip_invisible
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Device
  */

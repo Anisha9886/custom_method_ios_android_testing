@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Not Empty
  * description: Assert that $[value] is set and not empty — catches a dropped type step that left a field blank
  * actionType: custom_assert_not_empty
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */

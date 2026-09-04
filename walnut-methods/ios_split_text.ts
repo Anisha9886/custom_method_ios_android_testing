@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: iOS Split Text by Delimiter
  * description: Split $[textValue] by delimiter ${delimiter} and store parts in $[splitResult]
  * actionType: custom_ios_split_text
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Device
  */

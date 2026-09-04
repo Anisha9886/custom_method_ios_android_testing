@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Captures Differ
  * description: Assert that $[a] and $[b] hold different values — catches two fields sharing one variable
  * actionType: custom_assert_captures_differ
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */

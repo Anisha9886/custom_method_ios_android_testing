@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Contains Any
  * description: Assert that ${value} contains at least one of the strings in ${candidates} (comma-separated list)
  * actionType: custom_assert_contains_any
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */

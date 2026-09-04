@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Ping
  * description: Ping the pipeline to confirm custom methods are reachable
  * actionType: custom_ping
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: Smoke
  */

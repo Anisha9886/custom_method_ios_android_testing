@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Set Then Get
  * description: Round-trip check — store ${value} in $[name] then read it back to confirm the variable store works
  * actionType: custom_set_then_get
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: Smoke
  */

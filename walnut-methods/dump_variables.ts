@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Dump Variables
  * description: Log every runtime variable currently captured — use as a diagnostic step
  * actionType: custom_dump_variables
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: Smoke
  */

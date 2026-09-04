@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Echo Args
  * description: Echo step arguments ${a} and ${b} to prove they arrive correctly
  * actionType: custom_echo_args
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: Smoke
  */

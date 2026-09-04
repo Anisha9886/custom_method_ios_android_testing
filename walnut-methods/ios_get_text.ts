@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: iOS Get Element Text
  * description: Get text from element ${selector} on iOS device and store in $[textValue]
  * actionType: custom_ios_get_text
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Device
  */

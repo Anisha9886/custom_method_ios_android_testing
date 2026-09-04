@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Parse Number
  * description: Strip invisible Unicode and currency/grouping symbols from ${text} and store numeric string in $[number]
  * actionType: custom_parse_number
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Device
  */

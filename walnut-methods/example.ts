@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Login to Application
  * description: Login with ${username} and ${password}
  * actionType: custom_login
- * context: web
+ * type: web
  * needsLocator: false
  * category: Authentication
  */

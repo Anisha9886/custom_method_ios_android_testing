@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Travel Date
  * description: Compute a date offset by ${offsetDays} days from today in format ${format} and store in $[travelDate]
  * actionType: custom_travel_date
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Device
  */

@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Matches Regex
  * description: Assert that ${value} matches regex pattern ${pattern} — use instead of exact assertions on volatile text
  * actionType: custom_assert_matches
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */

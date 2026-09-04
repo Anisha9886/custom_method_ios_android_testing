@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Date In Month
  * description: Assert that date ${value} falls within month ${month} (YYYY-MM or month name) to catch dropped calendar navigation
  * actionType: custom_assert_date_in_month
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */

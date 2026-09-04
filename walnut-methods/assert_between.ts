@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Between
  * description: Assert that numeric ${value} is between ${min} and ${max} inclusive — catches recordings that pin exact fares
  * actionType: custom_assert_between
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */

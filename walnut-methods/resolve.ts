@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Resolve Placeholder
  * description: Expand ${text} through the Walnut placeholder engine and log the result
  * actionType: custom_resolve
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: Smoke
  */

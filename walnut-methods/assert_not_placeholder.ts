@@ -4,7 +4,7 @@ import type { WalnutContext } from './walnut';
  * name: Assert Not Placeholder
  * description: Assert that ${value} is not a placeholder or stale hint text left in an input field
  * actionType: custom_assert_not_placeholder
- * context: shared
+ * type: shared
  * needsLocator: false
  * category: iOS Assertions
  */
