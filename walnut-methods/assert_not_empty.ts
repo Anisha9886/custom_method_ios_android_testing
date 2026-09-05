@@ -42,11 +42,11 @@ export async function assertNotEmpty(ctx: WalnutContext) {
 
   if (cleaned.length === 0) {
     throw new Error(
-      'assert_not_empty FAILED: variable "' + varName + '" is set but resolves to an empty string ' +
-      '(raw value: ' + JSON.stringify(raw) + '). ' +
+      'assert_not_empty FAILED: ' + (usedVariable ? 'variable "' + arg + '"' : 'the value given') +
+      ' resolves to an empty string (raw value: ' + JSON.stringify(raw) + '). ' +
       'The capture step may have run but the type/fill step that populates the field was dropped.'
     );
   }
 
-  ctx.log('assert_not_empty PASSED: "' + varName + '" = ' + JSON.stringify(cleaned));
+  ctx.log('assert_not_empty PASSED: "' + arg + '" = ' + JSON.stringify(cleaned));
 }
