@@ -15,16 +15,21 @@ export async function assertNotEmpty(ctx: WalnutContext) {
   //
   // ctx.args[0] = "value" — runtime variable name from $[value]
 
-  const varName = ctx.args[0];
-  const raw = ctx.getVariable(varName);
+  // DUAL MODE — accepts a runtime-variable NAME or a literal VALUE. Same reasoning as
+  // assert_captures_differ: $[name] passes the NAME, ${name} passes the already-resolved VALUE, and
+  // reading args[0] as a name only made every ${...} argument look "never set".
+  const arg = ctx.args[0];
+  const lookedUp = ctx.getVariable(arg);
+  const usedVariable = lookedUp !== undefined && lookedUp !== null;
+  const raw = usedVariable ? lookedUp : arg;
 
-  ctx.log('assert_not_empty: checking variable "' + varName + '"');
+  ctx.log('assert_not_empty: ' + (usedVariable ? 'variable "' + arg + '"' : 'literal value'));
   ctx.log('assert_not_empty: raw value = ' + JSON.stringify(raw));
 
   if (raw === undefined || raw === null) {
     throw new Error(
-      'assert_not_empty FAILED: variable "' + varName + '" has never been set. ' +
-      'A capture step may have been dropped, or the variable name is misspelled.'
+      'assert_not_empty FAILED: "' + arg + '" is neither a set runtime variable nor a value. ' +
+      'A capture step may have been dropped, or the name is misspelled.'
     );
   }
 

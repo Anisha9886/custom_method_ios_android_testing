@@ -16,11 +16,23 @@ export async function assertCapturesDiffer(ctx: WalnutContext) {
   // ctx.args[0] = "a" — runtime variable name from $[a]
   // ctx.args[1] = "b" — runtime variable name from $[b]
 
+  // DUAL MODE — accepts a runtime-variable NAME or a literal VALUE.
+  //
+  // The engine resolves the two placeholder styles differently before this method runs:
+  //   $[name]  -> ctx.args receives the NAME  (look it up here)
+  //   ${name}  -> ctx.args receives the VALUE (already resolved; use as-is)
+  // Reading args[0] as a name ONLY meant a ${...} argument became getVariable("Mumbai") ->
+  // undefined -> "", so two obviously different cities both compared as "" and this assert failed
+  // with 'both equal ""'. Looking the name up when a variable by that name exists, and otherwise
+  // treating the argument as the value itself, makes the method work with either style — which
+  // matters while store_run_variable is unavailable and ${...} params are the only source.
   const varA = ctx.args[0];
   const varB = ctx.args[1];
 
-  const rawA = ctx.getVariable(varA);
-  const rawB = ctx.getVariable(varB);
+  const lookedUpA = ctx.getVariable(varA);
+  const lookedUpB = ctx.getVariable(varB);
+  const rawA = lookedUpA === undefined || lookedUpA === null ? varA : lookedUpA;
+  const rawB = lookedUpB === undefined || lookedUpB === null ? varB : lookedUpB;
 
   const a = rawA === undefined || rawA === null ? '' : String(rawA).replace(/\p{Cf}/gu, '').normalize('NFC');
   const b = rawB === undefined || rawB === null ? '' : String(rawB).replace(/\p{Cf}/gu, '').normalize('NFC');
@@ -29,10 +41,13 @@ export async function assertCapturesDiffer(ctx: WalnutContext) {
   ctx.log('  [' + varA + '] = ' + JSON.stringify(a));
   ctx.log('  [' + varB + '] = ' + JSON.stringify(b));
 
-  if (varA === varB) {
+  // Only meaningful in NAME mode: two capture steps pointed at one variable. In value mode the
+  // two arguments being identical is just "the same value twice", which the a === b check below
+  // reports more accurately — so this fires only when the name actually resolved to a variable.
+  if (varA === varB && lookedUpA !== undefined && lookedUpA !== null) {
     throw new Error(
-      'assert_captures_differ FAILED: both variable names are "' + varA + '" — ' +
-      'two capture steps are writing to the same variable; the second will always overwrite the first'
+      'assert_captures_differ FAILED: both arguments name the same variable "' + varA + '" — ' +
+      'two capture steps are writing to it; the second will always overwrite the first'
     );
   }
 
