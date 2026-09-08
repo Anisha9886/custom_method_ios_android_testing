@@ -17,10 +17,10 @@ export async function iosGetObjectText(ctx: WalnutContext) {
   if (!outputVar) {
     throw new Error('ios_get_object_text: missing output variable — add $[varName] to the step description.');
   }
-
-  // The Walnut agent stores the captured text from the locator in variableContext keyed by the locator
+  // ctx.getElementText() reads the LIVE element via ios_get_text on the device.
+  // Defaults to this step's linked object; pass an xpath to override.
   const locator = (ctx as any).locator as string;
-  const captured = ctx.getVariable(locator);
+  const captured = await (ctx as any).getElementText();
 
   // Strip invisible Unicode chars common on iOS/Android (bidi marks, zero-width spaces)
   const clean = (v: unknown): string =>
