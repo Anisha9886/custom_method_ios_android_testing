@@ -2,24 +2,41 @@ import type { WalnutContext } from './walnut';
 
 /** @walnut_method
  * name: Get Text From XPaths
- * description: Read captured text from ${xpath1} or ${xpath2} or ${xpath3} and store in $[textValue]
+ * description: Get text from object using xpaths ${xpaths} and store in $[textValue]
  * actionType: custom_get_text_from_xpaths
  * context: shared
  * needsLocator: false
  * category: Query
  */
 export async function getTextFromXpaths(ctx: WalnutContext) {
-  // ctx.args[0] = value of ${xpath1} — variable name holding text captured from the first XPath
-  // ctx.args[1] = value of ${xpath2} — variable name holding text captured from the second XPath
-  // ctx.args[2] = value of ${xpath3} — variable name holding text captured from the third XPath
-  // ctx.args[3] = "textValue"        — runtime variable name from $[textValue]
+  // ctx.args[0] = ${xpaths}    — pipe-separated XPath strings for the object, e.g.:
+  //                              //android.widget.TextView[@resource-id="dest"]|//XCUIElementTypeStaticText[@name="dest"]
+  //                              Any number of XPaths can be provided.
+  // ctx.args[1] = "textValue"  — runtime variable name from $[textValue]
   //
-  // HOW IT WORKS: In shared context there is no DOM access. Each ${xpathN} arg is the name of a
-  // runtime variable that was populated by a prior "capture element text" step for that XPath.
-  // This method picks the first variable that resolves to a non-empty string and stores it.
+  // HOW IT WORKS:
+  // The Walnut agent captures the text from each XPath locator and stores it in the
+  // variable context keyed by the XPath string itself. This method splits the pipe-
+  // separated list, looks up each XPath in the variable context, and stores the first
+  // non-empty result as the named runtime variable.
 
-  const varNames  = [ctx.args[0], ctx.args[1], ctx.args[2]];
-  const outputVar = ctx.args[3];
+  const rawXpaths = ctx.args[0] || '';
+  const outputVar = ctx.args[1];
+
+  if (!outputVar) {
+    throw new Error('get_text_from_xpaths: output variable name is missing. Add $[varName] to the step description.');
+  }
+
+  const xpaths = rawXpaths
+    .split('|')
+    .map(x => x.trim())
+    .filter(x => x.length > 0);
+
+  if (xpaths.length === 0) {
+    throw new Error('get_text_from_xpaths: no XPaths provided. Pass at least one XPath in ${xpaths}.');
+  }
+
+  ctx.log('get_text_from_xpaths: checking ' + xpaths.length + ' XPath(s) for object text');
 
   // Strip invisible Unicode (bidi marks, zero-width chars) common on iOS/Android
   const clean = (v: unknown): string =>
@@ -29,31 +46,34 @@ export async function getTextFromXpaths(ctx: WalnutContext) {
       .normalize('NFC')
       .trim();
 
-  for (const varName of varNames) {
-    if (!varName || varName.trim() === '') continue;
+  for (const xpath of xpaths) {
+    // The Walnut agent stores captured element text in variableContext using the XPath as the key
+    const captured = ctx.getVariable(xpath);
 
-    const raw = ctx.getVariable(varName);
-    if (raw === undefined || raw === null) {
-      ctx.log('Variable not set, skipping: ' + varName);
+    if (captured === undefined || captured === null) {
+      ctx.log('No text captured for XPath, skipping: ' + xpath);
       continue;
     }
 
-    const text = clean(raw);
+    const text = clean(captured);
     if (text === '') {
-      ctx.log('Variable is empty, skipping: ' + varName);
+      ctx.log('Captured text is empty for XPath, skipping: ' + xpath);
       continue;
     }
 
-    ctx.log('get_text_from_xpaths: using text "' + text + '" from variable "' + varName + '"');
+    ctx.log('get_text_from_xpaths: found "' + text + '" from XPath: ' + xpath);
     ctx.setVariable(outputVar, text);
     return;
   }
 
+  // None of the XPaths had text — build a diagnostic dump
+  const dump = xpaths
+    .map((x, i) => '  [' + (i + 1) + '] ' + x + ' → ' + JSON.stringify(ctx.getVariable(x)))
+    .join('\n');
+
   throw new Error(
-    'get_text_from_xpaths FAILED: none of the 3 variables contained text.\n'
-    + '  xpath1 var = ' + varNames[0] + ' → ' + JSON.stringify(ctx.getVariable(varNames[0])) + '\n'
-    + '  xpath2 var = ' + varNames[1] + ' → ' + JSON.stringify(ctx.getVariable(varNames[1])) + '\n'
-    + '  xpath3 var = ' + varNames[2] + ' → ' + JSON.stringify(ctx.getVariable(varNames[2])) + '\n'
-    + 'Ensure at least one capture step ran before this method and stored a non-empty value.'
+    'get_text_from_xpaths FAILED: none of the ' + xpaths.length + ' XPath(s) had captured text.\n'
+    + dump + '\n'
+    + 'Check that the object is visible on screen and at least one XPath locator matches it.'
   );
 }
