@@ -347,7 +347,9 @@ export interface WalnutAndroidContext extends WalnutBaseContext {
   getAttribute(attribute: string): Promise<string>;
 
   // --- Interact ---
-  /** Tap the linked element */
+  /** Click the linked element. Android's own name for this — the action type is 'click' and the tool is android_click. */
+  click(): Promise<void>;
+  /** Alias for click(), kept so a method moved over from iOS still works */
   tap(): Promise<void>;
   /** Type text into the linked element */
   type(text: string): Promise<void>;
@@ -365,7 +367,9 @@ export interface WalnutAndroidContext extends WalnutBaseContext {
   getTextBy(selector: AndroidSelector): Promise<string>;
   /** Read one attribute from an element named by an explicit selector */
   getAttributeBy(selector: AndroidSelector, attribute: string): Promise<string>;
-  /** Tap an element named by an explicit selector */
+  /** Click an element named by an explicit selector */
+  clickBy(selector: AndroidSelector): Promise<void>;
+  /** Alias for clickBy() */
   tapBy(selector: AndroidSelector): Promise<void>;
   /** Type into an element named by an explicit selector */
   typeBy(selector: AndroidSelector, text: string): Promise<void>;
