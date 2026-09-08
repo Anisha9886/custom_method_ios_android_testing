@@ -17,10 +17,10 @@ export async function iosGetObjectText(ctx: WalnutContext) {
   if (!outputVar) {
     throw new Error('ios_get_object_text: missing output variable — add $[varName] to the step description.');
   }
-  // ctx.getElementText() reads the LIVE element via ios_get_text on the device.
-  // Defaults to this step's linked object; pass an xpath to override.
-  const locator = (ctx as any).locator as string;
-  const captured = await (ctx as any).getElementText();
+  // ctx.locator is a resolved Playwright Locator injected by the Walnut agent
+  // (set in custom-method.handler.ts:216 when needsLocator: true).
+  const el = (ctx as any).locator;
+  const captured = await el.textContent();
 
   // Strip invisible Unicode chars common on iOS/Android (bidi marks, zero-width spaces)
   const clean = (v: unknown): string =>
@@ -35,7 +35,7 @@ export async function iosGetObjectText(ctx: WalnutContext) {
   if (text === '') {
     throw new Error(
       'ios_get_object_text FAILED: no text captured from object.\n'
-      + '  locator: ' + locator + '\n'
+      + '  locator: ' + el + '\n'
       + '  raw value: ' + JSON.stringify(captured) + '\n'
       + 'Check that the object is visible on screen and the locator matches it.'
     );
