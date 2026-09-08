@@ -1,6 +1,6 @@
 /**
  * Walnut SDK Type Definitions
- * Generated from manifest v2.1.0
+ * Generated from manifest v2.2.0
  * DO NOT EDIT — run "npm run generate:sdk" in walnut-agent to regenerate.
  */
 
@@ -16,6 +16,22 @@ export interface ApiResponse {
   body: any;
   /** Response time in milliseconds */
   responseTime: number;
+}
+
+/** Ad-hoc android element selector. Give at least one field; the more you give, the more strategies the resolver can race. resourceId and testTag are the most stable. */
+export interface AndroidSelector {
+  /** e.g. "com.grofers.customerapp:id/title" */
+  resourceId?: string;
+  /** Exact visible text */
+  text?: string;
+  /** Accessibility content-description */
+  contentDesc?: string;
+  /** Input placeholder — survives the user typing, unlike text */
+  hint?: string;
+  /** Compose Modifier.testTag — developer-set, strongest available */
+  testTag?: string;
+  /** Last resort; prefer the identity fields above */
+  xpath?: string;
 }
 
 /** Options for HTTP request methods */
@@ -317,5 +333,80 @@ export interface WalnutIosContext extends WalnutBaseContext {
 
 }
 
+/** Android device automation via UIAutomator2 (platform: 'android') */
+export interface WalnutAndroidContext extends WalnutBaseContext {
+  readonly platform: 'android';
+
+  /** The linked object's name, present when the method declares needsLocator: true. */
+  readonly objectDescription: string;
+
+  // --- Read ---
+  /** Read the linked element's text, falling back to content-desc for icon-only views. Requires needsLocator: true and a linked object. */
+  getText(): Promise<string>;
+  /** Read one attribute from the linked element */
+  getAttribute(attribute: string): Promise<string>;
+
+  // --- Interact ---
+  /** Tap the linked element */
+  tap(): Promise<void>;
+  /** Type text into the linked element */
+  type(text: string): Promise<void>;
+  /** Clear the linked input element */
+  clear(): Promise<void>;
+  /** Long-press the linked element */
+  longPress(): Promise<void>;
+
+  // --- Query ---
+  /** Whether the linked element resolves on screen — returns a boolean and never throws. Use it to branch, e.g. dismiss a first-run dialog only when it appeared. */
+  isVisible(): Promise<boolean>;
+
+  // --- Ad-hoc selector ---
+  /** Read text from an element named by an explicit selector (no linked object needed) */
+  getTextBy(selector: AndroidSelector): Promise<string>;
+  /** Read one attribute from an element named by an explicit selector */
+  getAttributeBy(selector: AndroidSelector, attribute: string): Promise<string>;
+  /** Tap an element named by an explicit selector */
+  tapBy(selector: AndroidSelector): Promise<void>;
+  /** Type into an element named by an explicit selector */
+  typeBy(selector: AndroidSelector, text: string): Promise<void>;
+  /** Clear an input named by an explicit selector */
+  clearBy(selector: AndroidSelector): Promise<void>;
+  /** Whether an element named by an explicit selector is on screen (never throws) */
+  isVisibleBy(selector: AndroidSelector): Promise<boolean>;
+
+  // --- Navigation ---
+  /** Press the system back button */
+  back(): Promise<void>;
+  /** Go to the home screen */
+  home(): Promise<void>;
+  /** Press a key by name (ENTER, BACK, TAB, …) */
+  pressKey(keyName: string): Promise<void>;
+  /** Dismiss the on-screen keyboard */
+  hideKeyboard(): Promise<void>;
+  /** Open the notification shade */
+  openNotifications(): Promise<void>;
+
+  // --- Scroll ---
+  /** Swipe the screen in a direction */
+  swipe(direction: 'up' | 'down' | 'left' | 'right'): Promise<void>;
+  /** Scroll until the given text is on screen */
+  scrollToText(text: string): Promise<void>;
+  /** Click the first element showing the given text */
+  clickByText(text: string): Promise<void>;
+
+  // --- App ---
+  /** Launch an app by package name */
+  startApp(packageName: string): Promise<void>;
+  /** Close a running app by package name */
+  closeApp(packageName: string): Promise<void>;
+  /** Clear app data and restart it */
+  resetApp(packageName: string): Promise<void>;
+
+  // --- Advanced ---
+  /** Call any android tool directly for anything the helpers above do not wrap. NOTE: this bypasses the locator chain — pass whatever args the tool expects. */
+  callTool(name: string, args?: Record<string, unknown>): Promise<string>;
+
+}
+
 /** Context passed to custom method functions */
-export type WalnutContext = WalnutWebContext | WalnutApiContext | WalnutIosContext;
+export type WalnutContext = WalnutWebContext | WalnutApiContext | WalnutIosContext | WalnutAndroidContext;
