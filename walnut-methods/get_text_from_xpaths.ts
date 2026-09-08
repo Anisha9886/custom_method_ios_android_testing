@@ -1,21 +1,21 @@
 import type { WalnutContext } from './walnut';
 
 /** @walnut_method
- * name: Get Object Text
- * description: Get text from object and store in $[textValue]
- * actionType: custom_get_object_text
+ * name: iOS Get Object Text
+ * description: Get text from object on iOS device and store in $[textValue]
+ * actionType: custom_ios_get_object_text
  * context: shared
  * needsLocator: true
- * category: Query
+ * category: iOS Device
  */
-export async function getObjectText(ctx: WalnutContext) {
+export async function iosGetObjectText(ctx: WalnutContext) {
   // ctx.locator   — the object's locator (XPath or selector), injected by the Walnut agent
   // ctx.args[0]   — "textValue" — runtime variable name from $[textValue]
 
   const outputVar = ctx.args[0];
 
   if (!outputVar) {
-    throw new Error('get_object_text: missing output variable — add $[varName] to the step description.');
+    throw new Error('ios_get_object_text: missing output variable — add $[varName] to the step description.');
   }
 
   // The Walnut agent stores the captured text from the locator in variableContext keyed by the locator
@@ -34,13 +34,13 @@ export async function getObjectText(ctx: WalnutContext) {
 
   if (text === '') {
     throw new Error(
-      'get_object_text FAILED: no text captured from object.\n'
+      'ios_get_object_text FAILED: no text captured from object.\n'
       + '  locator: ' + locator + '\n'
       + '  raw value: ' + JSON.stringify(captured) + '\n'
       + 'Check that the object is visible on screen and the locator matches it.'
     );
   }
 
-  ctx.log('get_object_text: "' + text + '" → ' + outputVar);
+  ctx.log('ios_get_object_text: "' + text + '" → ' + outputVar);
   ctx.setVariable(outputVar, text);
 }
