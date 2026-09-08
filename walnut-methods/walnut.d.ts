@@ -1,6 +1,6 @@
 /**
  * Walnut SDK Type Definitions
- * Generated from manifest v2.0.0
+ * Generated from manifest v2.1.0
  * DO NOT EDIT — run "npm run generate:sdk" in walnut-agent to regenerate.
  */
 
@@ -232,5 +232,90 @@ export interface WalnutApiContext extends WalnutBaseContext {
 
 }
 
+/** iOS device automation via WebDriverAgent (platform: 'ios') */
+export interface WalnutIosContext extends WalnutBaseContext {
+  readonly platform: 'ios';
+
+  /** The step object's resolved XPath — present when the method declares needsLocator: true and the step has an object linked, undefined otherwise. */
+  readonly locator: string;
+
+  // --- Read ---
+  /** Read the text of an element (returns it; storing is the method’s job) */
+  getText(xpath: string): Promise<string>;
+  /** Read a single attribute from an element */
+  getAttribute(xpath: string, attribute: string): Promise<string>;
+
+  // --- Interact ---
+  /** Tap an element */
+  tap(xpath: string): Promise<void>;
+  /** Tap at absolute screen coordinates */
+  tapAt(x: number, y: number): Promise<void>;
+  /** Double-tap an element */
+  doubleTap(xpath: string): Promise<void>;
+  /** Long-press at absolute screen coordinates */
+  longPressAt(x: number, y: number, duration?: number): Promise<void>;
+  /** Type text into an element */
+  type(xpath: string, text: string): Promise<void>;
+  /** Clear the value of an input element */
+  clear(xpath: string): Promise<void>;
+  /** Submit the form containing an element */
+  submit(xpath: string): Promise<void>;
+  /** Dismiss the on-screen keyboard */
+  hideKeyboard(): Promise<void>;
+  /** Press a hardware/system button by name (home, volumeUp, …) */
+  pressButton(name: string): Promise<void>;
+
+  // --- Navigation ---
+  /** Navigate back */
+  back(): Promise<void>;
+  /** Go to the home screen */
+  home(): Promise<void>;
+
+  // --- Verification ---
+  /** Assert an element is visible (throws on failure) */
+  verifyVisible(xpath: string): Promise<void>;
+  /** Assert an element is not visible (throws on failure) */
+  verifyNotVisible(xpath: string): Promise<void>;
+  /** Assert an element’s text equals the expected value (throws on mismatch) */
+  verifyText(xpath: string, text: string): Promise<void>;
+  /** Assert an element’s text contains the expected substring (throws on mismatch) */
+  verifyPartialText(xpath: string, text: string): Promise<void>;
+  /** Assert an element is enabled (throws on failure) */
+  verifyEnabled(xpath: string): Promise<void>;
+  /** Assert an element is disabled (throws on failure) */
+  verifyDisabled(xpath: string): Promise<void>;
+  /** Assert an element is selected (throws on failure) */
+  verifySelected(xpath: string): Promise<void>;
+
+  // --- Query ---
+  /** Check whether an element is visible — returns a boolean and never throws. Use it to branch, e.g. dismiss a first-run dialog only when it actually appeared. */
+  isVisible(xpath: string): Promise<boolean>;
+
+  // --- Wait ---
+  /** Wait for an element to appear */
+  waitFor(xpath: string, timeoutMs?: number): Promise<void>;
+
+  // --- Scroll ---
+  /** Scroll until the given text is on screen */
+  scrollToText(text: string, direction?: 'up' | 'down' | 'left' | 'right'): Promise<void>;
+  /** Scroll until the given element is on screen */
+  scrollToElement(xpath: string, direction?: 'up' | 'down' | 'left' | 'right'): Promise<void>;
+  /** Swipe the screen in a direction */
+  swipe(direction: 'up' | 'down' | 'left' | 'right'): Promise<void>;
+
+  // --- App ---
+  /** Launch an app by bundle id */
+  launchApp(bundleId: string): Promise<void>;
+  /** Terminate a running app by bundle id */
+  terminateApp(bundleId: string): Promise<void>;
+  /** Bring a backgrounded app to the foreground by bundle id */
+  activateApp(bundleId: string): Promise<void>;
+
+  // --- Advanced ---
+  /** Call any iOS tool directly (ios_orientation, ios_alert, …) for anything the helpers above do not wrap. Returns the tool’s raw response; throws on tool error. */
+  callTool(name: string, args?: Record<string, unknown>): Promise<string>;
+
+}
+
 /** Context passed to custom method functions */
-export type WalnutContext = WalnutWebContext | WalnutApiContext;
+export type WalnutContext = WalnutWebContext | WalnutApiContext | WalnutIosContext;
