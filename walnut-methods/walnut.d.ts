@@ -304,7 +304,7 @@ export interface WalnutIosContext extends WalnutBaseContext {
   verifySelected(xpath: string): Promise<void>;
 
   // --- Query ---
-  /** Check whether an element is visible — returns a boolean and never throws. Use it to branch, e.g. dismiss a first-run dialog only when it actually appeared. */
+  /** Check whether an element is visible — returns a boolean and never throws. Use it to branch, e.g. dismiss a first-run dialog only when it actually appeared. It asks once and does NOT wait, so never use it as a precheck before an action: that discards the retry the action performs itself and fails on a screen that is merely still loading. */
   isVisible(xpath: string): Promise<boolean>;
 
   // --- Wait ---
@@ -359,7 +359,7 @@ export interface WalnutAndroidContext extends WalnutBaseContext {
   longPress(): Promise<void>;
 
   // --- Query ---
-  /** Whether the linked element resolves on screen — returns a boolean and never throws. Use it to branch, e.g. dismiss a first-run dialog only when it appeared. */
+  /** Whether the linked element resolves on screen — returns a boolean and never throws. Use it to branch, e.g. dismiss a first-run dialog only when it appeared. It asks once and does NOT wait, so never use it as a precheck before an action: that discards the retry the action performs itself and fails on a screen that is merely still loading. */
   isVisible(): Promise<boolean>;
 
   // --- Ad-hoc selector ---

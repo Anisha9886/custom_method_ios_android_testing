@@ -9,19 +9,21 @@ import type { WalnutIosContext } from './walnut';
  * category: iOS Device
  */
 export async function iosClick(ctx: WalnutIosContext) {
-  // ctx.tap() takes the resolved XPath — the iOS context exposes the step's linked object
-  // XPath via ctx.locator when the method declares needsLocator: true.
+  // ctx.locator — the linked object's resolved XPath, because needsLocator is true.
   //
-  // ctx.locator — the linked object's resolved XPath, used for both visibility check and tap.
-
-  const visible = await ctx.isVisible(ctx.locator);
-  if (!visible) {
-    throw new Error(
-      'ios_click FAILED: the linked element is not visible on screen.\n'
-      + '  locator: ' + ctx.locator + '\n'
-      + 'Ensure the element is on screen before clicking.',
-    );
-  }
+  // NO isVisible() PRECHECK HERE, DELIBERATELY. This method used to open with:
+  //
+  //     if (!(await ctx.isVisible(ctx.locator))) throw new Error('not visible');
+  //
+  // and it failed in 186ms against a screen that had simply not finished rendering.
+  // isVisible is the BRANCH check — it asks once and never waits, because "no" is a
+  // legitimate answer when you are asking whether an optional dialog appeared. Putting it
+  // in front of an action discards the 90s retry ctx.tap() performs on its own, turning a
+  // method that would have waited for the screen into one that gives up immediately.
+  //
+  // ctx.tap() retries until ACTION_TIMEOUT and, if the element truly never appears, fails
+  // with WebDriverAgent's own message — more useful than a hand-written "not visible" that
+  // cannot say why.
 
   await ctx.tap(ctx.locator);
 
