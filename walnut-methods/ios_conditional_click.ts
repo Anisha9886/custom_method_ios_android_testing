@@ -12,15 +12,25 @@ export async function iosConditionalClick(ctx: WalnutIosContext) {
   // ctx.locator — the linked object's resolved XPath, because needsLocator is true.
   //
   // Strategy:
-  //   1. Wait up to 10 seconds for the element to appear using ctx.waitFor().
-  //   2. If the element becomes visible within that window → tap and pass.
-  //   3. If it never appears → log a clear message and pass gracefully (no throw),
-  //      because the element being absent is a valid, expected state for optional UI.
+  //   Poll ctx.isVisible() every 500 ms for up to 10 seconds (20 attempts).
+  //   isVisible() is a single non-blocking probe — it returns true/false immediately
+  //   and never retries on its own, which makes it safe to use inside a timed loop.
+  //   If the element is found → tap and pass.
+  //   If all 20 attempts fail → log and pass gracefully (element absent is valid state).
 
-  try {
-    await ctx.waitFor(ctx.locator, 10000);
-  } catch {
-    // Element did not appear within 10 seconds
+  const POLL_INTERVAL_MS = 500;
+  const MAX_ATTEMPTS = 20; // 20 × 500 ms = 10 seconds
+
+  let visible = false;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    visible = await ctx.isVisible(ctx.locator);
+    if (visible) break;
+    ctx.log('ios_conditional_click: waiting for element, attempt ' + attempt + '/' + MAX_ATTEMPTS);
+    await new Promise<void>((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+  }
+
+  if (!visible) {
     ctx.log(
       'ios_conditional_click: element is not present so click not performed.\n'
       + '  locator: ' + ctx.locator,
